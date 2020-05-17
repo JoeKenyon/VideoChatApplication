@@ -28,8 +28,13 @@ public class Main {
 
     public static void main(String[] args) throws IOException
     {
-        BufferedImage img = ImageIO.read(new File("something.jpg"));
-	    img = GoldFoilCompressor.compress(img);
-	    DisplayImage.display(img);
+        //BufferedImage img = ImageIO.read(new File("something.jpg"));
+	    //img = GoldFoilCompressor.compress(img);
+	    //DisplayImage.display(img);
+
+        Sender sender;
+        Receiver receiver;
+        sender.start();
+        receiver.start();
     }
 }
