@@ -1,7 +1,14 @@
 package com.company;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
 public class Receiver implements Runnable
 {
+    static DatagramSocket receiving_socket;
+
     void start()
     {
         Thread thread = new Thread(this);
@@ -9,7 +16,40 @@ public class Receiver implements Runnable
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
+        boolean running        = true;
+        int PORT               = 55555;
+        AudioPlayer player     = null;
 
+        try
+        {
+            player           = new AudioPlayer();
+            receiving_socket = new DatagramSocket(PORT);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        while (running)
+        {
+
+            try
+            {
+                byte[] buffer = new byte[512];
+                DatagramPacket packet = new DatagramPacket(buffer, 0, buffer.length);
+
+                receiving_socket.receive(packet);
+
+                player.playBlock(buffer);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        receiving_socket.close();
     }
 }

@@ -51,7 +51,6 @@ public class Sender implements Runnable
                 sending_socket.send(packet);
 
             } catch (IOException e){
-                System.out.println("ERROR: TextSender: Some random IO error occured!");
                 e.printStackTrace();
             }
         }
