@@ -14,7 +14,7 @@ class DisplayImage
         ImageIcon icon = new ImageIcon(img);
         JFrame frame = new JFrame();
         frame.setLayout(null);
-        frame.setSize(500, 500);
+        frame.setSize(img.getWidth(), img.getHeight());
         JLabel lbl = new JLabel();
         lbl.setIcon(icon);
         lbl.setBounds(0,0,img.getWidth(),img.getHeight());
@@ -30,7 +30,9 @@ public class Main {
     {
 	    //BufferedImage img = new BufferedImage(500,500,1);
         BufferedImage img = ImageIO.read(new File("something.jpg"));
-	    //GoldFoilCompressor.compress(img);
+
+	    img = GoldFoilCompressor.compress(img);
+
 	    DisplayImage.display(img);
     }
 }
