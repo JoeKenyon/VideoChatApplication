@@ -1,8 +1,11 @@
 package com.company;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 class DisplayImage
 {
@@ -23,10 +26,11 @@ class DisplayImage
 
 public class Main {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
-	    BufferedImage img = new BufferedImage(500,500,1);
-	    GoldFoilCompressor.compress(img);
+	    //BufferedImage img = new BufferedImage(500,500,1);
+        BufferedImage img = ImageIO.read(new File("something.jpg"));
+	    //GoldFoilCompressor.compress(img);
 	    DisplayImage.display(img);
     }
 }
