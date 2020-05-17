@@ -8,7 +8,7 @@ import java.net.InetAddress;
 
 public class Sender implements Runnable
 {
-    static DatagramSocket sending_socket;
+    static CustomSocket sending_socket;
 
     void start()
     {
@@ -27,7 +27,7 @@ public class Sender implements Runnable
         try
         {
             recorder = new AudioRecorder();
-            sending_socket = new DatagramSocket();
+            sending_socket = new CustomSocket();
             clientIP = InetAddress.getByName("localhost");
         }
         catch (Exception e)

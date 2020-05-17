@@ -3,12 +3,11 @@ package com.company;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.Random;
 
 public class Receiver implements Runnable
 {
-    static DatagramSocket receiving_socket;
+    static CustomSocket receiving_socket;
 
     void start()
     {
@@ -26,7 +25,7 @@ public class Receiver implements Runnable
         try
         {
             player           = new AudioPlayer();
-            receiving_socket = new DatagramSocket(PORT);
+            receiving_socket = new CustomSocket(PORT);
         }
         catch (Exception e)
         {
