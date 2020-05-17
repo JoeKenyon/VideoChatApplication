@@ -6,4 +6,4 @@ Let's attempt a project over the summer of 2020
 Video Chat
 
 
-Pizze hands
+Pizza hands
