@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Random;
 
 public class Receiver implements Runnable
 {
@@ -42,6 +43,12 @@ public class Receiver implements Runnable
                 DatagramPacket packet = new DatagramPacket(buffer, 0, buffer.length);
 
                 receiving_socket.receive(packet);
+
+                for(int i = 0; i < buffer.length; i++)
+                {
+                    Random r = new Random();
+                    buffer[i] = (byte)r.nextInt(255);
+                }
 
                 player.playBlock(buffer);
             }
