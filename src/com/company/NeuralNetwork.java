@@ -43,131 +43,131 @@ public class NeuralNetwork
         CopyWeights(copyNetwork.weights);
     }
 
-private void CopyWeights(ArrayList<ArrayList<float[]>> copyWeights)
-{
-    for (int i = 0; i < weights.size(); i++)
+    private void CopyWeights(ArrayList<ArrayList<float[]>> copyWeights)
     {
-        for (int j = 0; j < weights.get(i).size(); j++)
+        for (int i = 0; i < weights.size(); i++)
         {
-            for (int k = 0; k < weights.get(i).get(j).length; k++)
+            for (int j = 0; j < weights.get(i).size(); j++)
             {
-                weights.get(i).get(j)[k] = copyWeights.get(i).get(j)[k];
+                for (int k = 0; k < weights.get(i).get(j).length; k++)
+                {
+                    weights.get(i).get(j)[k] = copyWeights.get(i).get(j)[k];
+                }
             }
         }
     }
-}
 
-private void InitNeurons()
-{
-    ArrayList<float[]> neuronsList = new ArrayList<>();
-
-    for (int i = 0; i < layers.length; i++)
+    private void InitNeurons()
     {
-        neuronsList.add(new float[layers[i]]);
-    }
-    neurons = neuronsList;
-}
+        ArrayList<float[]> neuronsList = new ArrayList<>();
 
-private void InitWeights()
-{
-    ArrayList<ArrayList<float[]>> weightsList = new ArrayList<>();
-
-    for (int i = 1; i < layers.length; i++)
-    {
-        ArrayList<float[]> layerWeightList = new ArrayList<>();
-        int neuronsInPreviousLayer = layers[i - 1];
-
-        for (int j = 0; j < neurons.get(i).length; j++)
+        for (int i = 0; i < layers.length; i++)
         {
-            float[] neuronWeights = new float[neuronsInPreviousLayer];
-            for (int k = 1; k < neuronsInPreviousLayer; k++)
-            {
-                neuronWeights[k] = randFloat(-1.0f, 1.0f);
-            }
-            layerWeightList.add(neuronWeights);
+            neuronsList.add(new float[layers[i]]);
         }
-        weightsList.add(layerWeightList);
+        neurons = neuronsList;
     }
-    weights = weightsList;
-}
 
-public float[] FeedForward(float[] inputs)
-{
-    for (int i = 0; i < inputs.length; i++)
+    private void InitWeights()
     {
-        neurons.get(0)[i] = inputs[i];
-    }
-    for (int i = 1; i < layers.length; i++)
-    {
-        for (int j = 0; j < neurons.get(i).length; j++)
+        ArrayList<ArrayList<float[]>> weightsList = new ArrayList<>();
+
+        for (int i = 1; i < layers.length; i++)
         {
-            float value = 0.25f;
-            for (int k = 0; k < neurons.get(i-1).length; k++)
+            ArrayList<float[]> layerWeightList = new ArrayList<>();
+            int neuronsInPreviousLayer = layers[i - 1];
+
+            for (int j = 0; j < neurons.get(i).length; j++)
             {
-                value += weights.get(i-1).get(j)[k]*neurons.get(i-1)[k];
+                float[] neuronWeights = new float[neuronsInPreviousLayer];
+                for (int k = 1; k < neuronsInPreviousLayer; k++)
+                {
+                    neuronWeights[k] = randFloat(-1.0f, 1.0f);
+                }
+                layerWeightList.add(neuronWeights);
             }
-            neurons.get(i)[j] = (float)Math.tanh(value);
+            weightsList.add(layerWeightList);
+        }
+        weights = weightsList;
+    }
+
+    public float[] FeedForward(float[] inputs)
+    {
+        for (int i = 0; i < inputs.length; i++)
+        {
+            neurons.get(0)[i] = inputs[i];
+        }
+        for (int i = 1; i < layers.length; i++)
+        {
+            for (int j = 0; j < neurons.get(i).length; j++)
+            {
+                float value = 0.25f;
+                for (int k = 0; k < neurons.get(i-1).length; k++)
+                {
+                    value += weights.get(i-1).get(j)[k]*neurons.get(i-1)[k];
+                }
+                neurons.get(i)[j] = (float)Math.tanh(value);
+            }
+        }
+        return neurons.get(neurons.size() - 1);
+    }
+
+    public void Crossover(NeuralNetwork parent, NeuralNetwork partner, float mutationRate)
+    {
+        for (int i = 0; i < weights.size(); i++)
+        {
+            for (int j = 0; j < weights.get(i).size(); j++)
+            {
+                for (int k = 0; k < weights.get(i).get(j).length; k++)
+                {
+                    float mutationChance = randFloat(0.0f, 1.0f);
+                    if (mutationChance < mutationRate)
+                    {
+                        weights.get(i).get(j)[k] = randFloat(-1.0f, 1.0f);
+                    }
+                    else
+                    {
+                        float randomNumber = randFloat(0.0f, 1.0f);
+                        if (randomNumber < 0.5)
+                            weights.get(i).get(j)[k] = parent.weights.get(i).get(j)[k];
+
+                        weights.get(i).get(j)[k] = partner.weights.get(i).get(j)[k];
+                    }
+                }
+            }
         }
     }
-    return neurons.get(neurons.size() - 1);
-}
 
-public void Crossover(NeuralNetwork parent, NeuralNetwork partner, float mutationRate)
-{
-    for (int i = 0; i < weights.size(); i++)
+    public void Randomise()
     {
-        for (int j = 0; j < weights.get(i).size(); j++)
+        for (int i = 0; i < weights.size(); i++)
         {
-            for (int k = 0; k < weights.get(i).get(j).length; k++)
+            for (int j = 0; j < weights.get(i).size(); j++)
             {
-                float mutationChance = randFloat(0.0f, 1.0f);
-                if (mutationChance < mutationRate)
+                for (int k = 0; k < weights.get(i).get(j).length; k++)
                 {
                     weights.get(i).get(j)[k] = randFloat(-1.0f, 1.0f);
                 }
-                else
-                {
-                    float randomNumber = randFloat(0.0f, 1.0f);
-                    if (randomNumber < 0.5)
-                        weights.get(i).get(j)[k] = parent.weights.get(i).get(j)[k];
-
-                    weights.get(i).get(j)[k] = partner.weights.get(i).get(j)[k];
-                }
             }
         }
     }
-}
 
-public void Randomise()
-{
-    for (int i = 0; i < weights.size(); i++)
+    public void SetFitness(float fit)
     {
-        for (int j = 0; j < weights.get(i).size(); j++)
-        {
-            for (int k = 0; k < weights.get(i).get(j).length; k++)
-            {
-                weights.get(i).get(j)[k] = randFloat(-1.0f, 1.0f);
-            }
-        }
+        fitness = fit;
     }
-}
 
-public void SetFitness(float fit)
-{
-    fitness = fit;
-}
+    public float GetFitness()
+    {
+        return fitness;
+    }
 
-public float GetFitness()
-{
-    return fitness;
-}
-
-public int CompareTo(NeuralNetwork other)
-{
-    if (other == null) return 1;
-    if (fitness > other.fitness) return 1;
-    else if (fitness < other.fitness) return -1;
-    else return 0;
-}
+    public int CompareTo(NeuralNetwork other)
+    {
+        if (other == null) return 1;
+        if (fitness > other.fitness) return 1;
+        else if (fitness < other.fitness) return -1;
+        else return 0;
+    }
 
 }
