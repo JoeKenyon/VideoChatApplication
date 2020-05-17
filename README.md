@@ -1,4 +1,4 @@
-# java_summer_project
+# Java Summer Project
 Let's attempt a project over the summer of 2020
 
 
