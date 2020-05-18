@@ -1,6 +1,9 @@
-# java_summer_project
-Hey is that you ethan
-#
-IDEAS:
-#
+# Java Summer Project
+Let's attempt a project over the summer of 2020
+
+
+# IDEAS:
 Video Chat
+
+
+Pizza Hands
