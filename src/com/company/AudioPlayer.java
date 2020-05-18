@@ -1,14 +1,16 @@
 package com.company;
 
 import java.io.IOException;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.DataLine.Info;
 
-public class AudioPlayer {
-    private AudioFormat linearFormat = new AudioFormat(8000.0F, 16, 1, true, false);
+public class AudioPlayer
+{
+    private AudioFormat linearFormat = new AudioFormat(8000.0f, 16, 1, true, true);
     private SourceDataLine sourceDataLine;
 
     public AudioPlayer() throws LineUnavailableException
@@ -19,7 +21,7 @@ public class AudioPlayer {
         this.sourceDataLine.start();
     }
 
-    public void playBlock(byte[] voiceData) throws IOException
+    public void playBlock(byte[] voiceData)
     {
         this.sourceDataLine.write(voiceData, 0, voiceData.length);
     }

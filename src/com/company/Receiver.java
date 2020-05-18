@@ -43,13 +43,7 @@ public class Receiver implements Runnable
 
                 receiving_socket.receive(packet);
 
-                for(int i = 0; i < buffer.length; i++)
-                {
-                    Random r = new Random();
-                    buffer[i] = (byte)r.nextInt(255);
-                }
-
-                player.playBlock(buffer);
+                player.playBlock(generateSineWave(120));
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -57,5 +51,29 @@ public class Receiver implements Runnable
         }
 
         receiving_socket.close();
+    }
+
+    private static byte[] generateSineWave(int frequencyOfSignal)
+    {
+        float sampleRate = 8000;
+        double f = frequencyOfSignal;
+        double a = .5;
+        double twoPiF = 2*Math.PI*f;
+
+        double[] buffer = new double [8000];
+        for (int sample = 0; sample < buffer.length; sample++)
+        {
+            double time = sample / sampleRate;
+            buffer[sample++] = a * Math.sin(twoPiF*time);
+        }
+
+        byte[] byteBuffer = new byte[8000];
+        int idx = 0;
+        for (int i = 0; i < byteBuffer.length; )
+        {
+            int x = (int) (buffer[idx++]*127);
+            byteBuffer[i++] = (byte) x;
+        }
+        return byteBuffer;
     }
 }

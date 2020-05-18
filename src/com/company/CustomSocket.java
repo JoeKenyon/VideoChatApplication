@@ -16,7 +16,8 @@ public class CustomSocket extends DatagramSocket
     }
 
     @Override
-    public void receive(DatagramPacket p) throws IOException {
+    public void receive(DatagramPacket p) throws IOException
+    {
         super.receive(p);
     }
 

@@ -12,7 +12,7 @@ public class AudioRecorder
 {
     private TargetDataLine targetDataLine;
     private AudioInputStream linearStream;
-    private AudioFormat linearFormat = new AudioFormat(8000.0F, 16, 1, true, false);
+    private AudioFormat linearFormat = new AudioFormat(8000.0f, 16, 1, true, true);
 
     public AudioRecorder() throws LineUnavailableException {
         Info info = new Info(TargetDataLine.class, this.linearFormat);
