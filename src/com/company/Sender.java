@@ -8,6 +8,8 @@ import java.net.InetAddress;
 public class Sender implements Runnable
 {
     static DatagramSocket sending_socket;
+    static int SEQ_NUMBER = 0;
+    static byte[] PREV_FRAME;
 
     void start()
     {
@@ -40,36 +42,55 @@ public class Sender implements Runnable
         {
             try
             {
-                byte[] buffer = Utils.getVideoData();
 
-                assert buffer != null;
 
-                System.out.println(buffer.length);
-
-                // get video data
-
-                // get sequence number
-
-                // put into chunks
-
-                // check similarities with previous frame
-                // save previous frame as current frame
-
-                // compress it
-
-                // send it
 
                 //Make a DatagramPacket from it, with client address and port number
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, clientIP, PORT);
+                //DatagramPacket packet = new DatagramPacket(buffer, buffer.length, clientIP, PORT);
 
                 //Send it
-                sending_socket.send(packet);
+                //sending_socket.send(packet);
 
-            } catch (IOException e){
+            } catch (Exception e){
                 e.printStackTrace();
             }
         }
         //Close the socket
         sending_socket.close();
+    }
+
+    /**
+     *
+     * formPacketBuffer
+     */
+    public static byte[][] formPacketBuffer(byte[] image_data)
+    {
+        // get video data
+        byte[] video_data = Utils.getVideoData();
+        assert video_data != null;
+
+        // put into chunks
+        byte[][] chunks = new byte[3][3];
+
+        byte[] compressed = Utils.compress(video_data);
+        System.out.println(compressed.length);
+
+
+        // check similarities with previous frame
+        // save previous frame as current frame
+        PREV_FRAME = video_data;
+
+        //for(int i = 0; i < chunks.length; i++)
+        {
+            // get sequence number
+            int seq_num = SEQ_NUMBER++;
+        }
+
+        // compress it
+
+        // send it
+
+        return new byte[2][2];
+
     }
 }

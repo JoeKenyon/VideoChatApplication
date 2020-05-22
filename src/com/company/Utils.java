@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
 
 public class Utils
@@ -49,10 +51,65 @@ public class Utils
         return dimg;
     }
 
-    public static byte[] createPacketBuffer(int seq_num, byte[] image)
+    /**
+     * Describe function here
+     */
+    public static byte[] uncompress(final byte[] input)
     {
-        return new byte[2];
+        try
+        {
+            Inflater decompressor = new Inflater();
+            decompressor.setInput(input);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
+
+            byte[] buf = new byte[1024];
+            while (!decompressor.finished())
+            {
+                int count = decompressor.inflate(buf);
+                bos.write(buf, 0, count);
+            }
+            bos.close();
+            return bos.toByteArray();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return new byte[0];
+        }
     }
+
+    /**
+     * Describe function here
+     */
+    public static byte[] compress(final byte[] input)
+    {
+        try
+        {
+            Deflater compressor = new Deflater();
+            compressor.setLevel(Deflater.BEST_COMPRESSION);
+
+            compressor.setInput(input);
+            compressor.finish();
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
+
+            byte[] buf = new byte[1024];
+            while (!compressor.finished())
+            {
+                int count = compressor.deflate(buf);
+                bos.write(buf, 0, count);
+            }
+            bos.close();
+            return bos.toByteArray();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
 
     /**
      * Describe function here
@@ -62,7 +119,7 @@ public class Utils
         try
         {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write( image, "jpg", baos );
+            ImageIO.write( image, "gif", baos );
             baos.flush();
             byte[] imageInByte = baos.toByteArray();
             baos.close();
