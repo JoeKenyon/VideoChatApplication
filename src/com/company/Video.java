@@ -14,7 +14,7 @@ public class Video implements Runnable
         public VideoWindow()
         {
             this.setLayout(null);
-            timer = new Timer(40, e -> repaint());
+            timer = new Timer(10, e -> repaint());
             timer.start();
         }
         @Override
@@ -23,7 +23,7 @@ public class Video implements Runnable
             super.paintComponent(g);
             if(current_frame != null)
             {
-                g.drawImage(current_frame, 100, 0, null);
+                g.drawImage(current_frame, 0, 0, null);
             }
             else
             {

@@ -1,10 +1,10 @@
 package com.company;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
@@ -110,10 +110,21 @@ public class Utils
         }
     }
 
+    public static BufferedImage toImage(byte[] data, int width, int height)
+    {
+        try
+        {
+            ByteArrayInputStream bis = new ByteArrayInputStream(data);
+            return ImageIO.read(bis);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-    /**
-     * Describe function here
-     */
+
     public static byte[] imageToByteArray(BufferedImage image)
     {
         try
