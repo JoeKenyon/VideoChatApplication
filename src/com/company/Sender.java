@@ -1,9 +1,7 @@
 package com.company;
 
-import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Sender implements Runnable
