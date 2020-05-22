@@ -2,11 +2,12 @@ package com.company;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Sender implements Runnable
 {
-    static CustomSocket sending_socket;
+    static DatagramSocket sending_socket;
 
     void start()
     {
@@ -25,7 +26,7 @@ public class Sender implements Runnable
         try
         {
             recorder = new AudioRecorder();
-            sending_socket = new CustomSocket();
+            sending_socket = new DatagramSocket();
             clientIP = InetAddress.getByName("localhost");
         }
         catch (Exception e)
@@ -39,8 +40,24 @@ public class Sender implements Runnable
         {
             try
             {
-                //Read in a string from the standard input
-                byte[] buffer = recorder.getBlock();
+                byte[] buffer = Utils.getVideoData();
+
+                assert buffer != null;
+
+                System.out.println(buffer.length);
+
+                // get video data
+
+                // get sequence number
+
+                // put into chunks
+
+                // check similarities with previous frame
+                // save previous frame as current frame
+
+                // compress it
+
+                // send it
 
                 //Make a DatagramPacket from it, with client address and port number
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, clientIP, PORT);

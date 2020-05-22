@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Receiver implements Runnable
 {
-    static CustomSocket receiving_socket;
+    static DatagramSocket receiving_socket;
 
     void start()
     {
@@ -26,7 +26,7 @@ public class Receiver implements Runnable
         try
         {
             player           = new AudioPlayer();
-            receiving_socket = new CustomSocket(PORT);
+            receiving_socket = new DatagramSocket(PORT);
         }
         catch (Exception e)
         {
@@ -38,7 +38,8 @@ public class Receiver implements Runnable
         {
             try
             {
-                byte[] buffer = new byte[512];
+                byte[] buffer = new byte[9000];
+
                 DatagramPacket packet = new DatagramPacket(buffer, 0, buffer.length);
 
                 receiving_socket.receive(packet);

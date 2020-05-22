@@ -26,7 +26,9 @@ public class Main {
     {
         Sender sender = new Sender();
         Receiver receiver = new Receiver();
+        Video video = new Video();
         sender.start();
-        receiver.start();
+        //receiver.start();
+        video.start();
     }
 }

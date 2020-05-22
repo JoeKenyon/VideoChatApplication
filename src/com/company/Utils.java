@@ -3,6 +3,9 @@ package com.company;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class Utils
 {
@@ -34,6 +37,47 @@ public class Utils
     /**
      * Describe function here
      */
+    public static BufferedImage resizeImage(BufferedImage img, int newW, int newH)
+    {
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
+    }
+
+    public static byte[] createPacketBuffer(int seq_num, byte[] image)
+    {
+        return new byte[2];
+    }
+
+    /**
+     * Describe function here
+     */
+    public static byte[] imageToByteArray(BufferedImage image)
+    {
+        try
+        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write( image, "jpg", baos );
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Describe function here
+     */
     public static byte[] getVideoData()
     {
         try
@@ -47,7 +91,7 @@ public class Utils
             {
                 // return users screen instead
                 BufferedImage screen_shit = new Robot().createScreenCapture(SCREEN_DIMENSIONS);
-                return ((DataBufferByte) screen_shit.getData().getDataBuffer()).getData();
+                return imageToByteArray(screen_shit);
             }
         }
         catch (Exception e)
