@@ -1,0 +1,24 @@
+/**
+TO DO
+**/
+
+/**
+Efficient and effective way of creating packets with both audio and video.
+This could include compression, which we'd then have to write code for.
+Packet header, sequence number etc.
+**/
+
+/**
+If we do use compression. Create method for taking in a Image and creating a compressed
+byte array that we can send via udp. Do the same for audio.
+**/
+
+/**
+Set up peer to peer connection, with ability to diconnected and connect using three way handshake.
+Maybe use TCP for this. We need a to create a simple super loop for the sender and reciever to deal with
+different packet types.
+**/
+
+/**
+Implement GUI for this.
+**/
