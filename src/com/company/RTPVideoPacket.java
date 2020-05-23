@@ -48,6 +48,7 @@ public class RTPVideoPacket
 
         // extract payload
         this.payload = new byte[this.payloadSize];
+
         System.arraycopy(data,off, this.payload, 0, this.payloadSize);
     }
 
@@ -75,6 +76,7 @@ public class RTPVideoPacket
         this.chunkY         = chunkY;
         this.payloadSize    = payload.length;
         this.payload        = payload;
+
     }
 
     /**

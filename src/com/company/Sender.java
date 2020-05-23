@@ -55,7 +55,9 @@ public class Sender implements Runnable
 
                     System.arraycopy(video_data, (payload.length * i), payload, 0, payload.length);
 
-                    RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,0,i,payload);
+                    payload = Utils.compress(payload);
+
+                    RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,0, i, payload);
 
                     byte[] packetData = rtp.toBytes();
 
@@ -64,7 +66,8 @@ public class Sender implements Runnable
                     sending_socket.send(packet);
 
                     // send voice packet
-                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, 512, recorder.getBlock());
+
+                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, recorder.getBlock());
 
                     packetData = rtpA.toBytes();
 

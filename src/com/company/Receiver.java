@@ -38,7 +38,7 @@ public class Receiver implements Runnable
                 Integer.BYTES  +  // chunkX
                 Integer.BYTES  +  // chunkY
                 Integer.BYTES  +  // payload size
-                Utils.SCREEN_WIDTH*3; // payload
+                750*3; // payload
 
 
         while (running)
@@ -52,11 +52,14 @@ public class Receiver implements Runnable
 
                 receiving_socket.receive(packet);
 
+                System.out.println(buffer[0]);
+
                 // video
                 if(buffer[0] == 1)
                 {
+                    //buffer = Utils.compress(buffer);
                     RTPVideoPacket rtp = new RTPVideoPacket(buffer);
-                    Video.current_frame[rtp.chunkY] = rtp.payload;
+                    Video.current_frame[rtp.chunkY] = Utils.uncompress(rtp.payload);
                 }
 
                 // audio

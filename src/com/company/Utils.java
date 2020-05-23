@@ -157,7 +157,7 @@ public class Utils
             {
                 // return users screen instead
                 //BufferedImage screen_shit =
-                return imageToByteArray(robot.createScreenCapture(SCREEN_DIMENSIONS));
+                return (imageToByteArray(robot.createScreenCapture(SCREEN_DIMENSIONS)));
             }
         }
         catch (Exception e)
