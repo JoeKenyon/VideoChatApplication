@@ -9,6 +9,9 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
 
+/**
+ * Util Method and Global Static Vars
+ */
 public class Utils
 {
     /**

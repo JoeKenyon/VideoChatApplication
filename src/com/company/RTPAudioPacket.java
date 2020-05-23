@@ -4,12 +4,14 @@ import java.util.Arrays;
 
 public class RTPAudioPacket
 {
-    int sequenceNumber;
-    int chunkX;
-    int chunkY;
-    int payloadSize;
+    byte   packetType;
+    int    sequenceNumber;
+    int    payloadSize;
     byte[] payload;
 
+    /**
+     * Describe function here
+     */
     public RTPAudioPacket(byte[] data)
     {
 
@@ -17,20 +19,10 @@ public class RTPAudioPacket
         // number of bytes read
         int off = 0;
 
+        this.packetType    = data[off++];
+
         //extract sequence number
         this.sequenceNumber = ((data[off++] & 0xFF) << 0) |
-                ((data[off++] & 0xFF) << 8) |
-                ((data[off++] & 0xFF) << 16 ) |
-                ((data[off++] & 0xFF) << 24 );
-
-        // extract payload size
-        this.chunkX = ((data[off++] & 0xFF) << 0) |
-                ((data[off++] & 0xFF) << 8) |
-                ((data[off++] & 0xFF) << 16 ) |
-                ((data[off++] & 0xFF) << 24 );
-
-        // extract payload size
-        this.chunkY = ((data[off++] & 0xFF) << 0) |
                 ((data[off++] & 0xFF) << 8) |
                 ((data[off++] & 0xFF) << 16 ) |
                 ((data[off++] & 0xFF) << 24 );
@@ -46,34 +38,70 @@ public class RTPAudioPacket
         System.arraycopy(data,off, this.payload, 0, this.payloadSize);
     }
 
+    /**
+     * Describe function here
+     */
     public RTPAudioPacket(int sequenceNumber, int payloadSize ,byte[] payload)
     {
+        this.packetType     = 1;
         this.sequenceNumber = sequenceNumber;
         this.payloadSize    = payloadSize;
         this.payload        = payload;
     }
 
+    /**
+     * Describe function here
+     */
+    public RTPAudioPacket(int sequenceNumber, byte[] payload)
+    {
+        this.packetType     = 1;
+        this.sequenceNumber = sequenceNumber;
+        this.payloadSize    = payload.length;
+        this.payload        = payload;
+    }
+
+    /**
+     * Describe function here
+     */
     public byte[] toBytes()
     {
         assert payload != null;
 
-        int headerSize = Integer.BYTES*2;
-        byte[] packetData = new byte[this.payloadSize + headerSize];
+        int packetSize =
+                Byte.BYTES     +  // packet type
+                Integer.BYTES  +  // sequence number
+                Integer.BYTES  +  // payload size
+                this.payloadSize; // payload
 
+
+        byte[] packetData = new byte[packetSize];
+
+        int off = 0;
+
+        // packet type
+        packetData[off++] = this.packetType;
+
+        // sequence number
         for(int i = 0; i < 4; i++) {
-            packetData[i] = (byte)(this.sequenceNumber >>> (i * 8));
+            packetData[off++] = (byte)(this.sequenceNumber >>> (i * 8));
         }
 
+        // payload size
         for(int i = 0; i < 4; i++) {
-            packetData[i+4] = (byte)(this.payloadSize >>> (i * 8));
+            packetData[off++] = (byte)(this.payloadSize >>> (i * 8));
         }
 
-        if (this.payloadSize >= 0)
-            System.arraycopy(this.payload, 0, packetData, 8, this.payloadSize);
+        // payload
+        for(int i = 0; i < this.payloadSize; i++){
+            packetData[off++] = this.payload[i];
+        }
 
         return packetData;
     }
 
+    /**
+     * Describe function here
+     */
     @Override
     public String toString()
     {
