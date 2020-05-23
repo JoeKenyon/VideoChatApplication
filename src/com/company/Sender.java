@@ -44,12 +44,37 @@ public class Sender implements Runnable
         {
             try
             {
-                RTPAudioPacket rtp = new RTPAudioPacket(SEQ_NUMBER++, 512, recorder.getBlock());
-                byte[] packetData = rtp.toBytes();
-                DatagramPacket packet = new DatagramPacket(packetData, packetData.length, clientIP, PORT);
 
-                //Send it
-                sending_socket.send(packet);
+                byte[] video_data = Utils.getVideoData();
+
+                for(int i = 0; i < 500; i++)
+                {
+                    byte[] payload = new byte[750*3];
+
+                    assert video_data != null;
+
+                    System.arraycopy(video_data, (payload.length * i), payload, 0, payload.length);
+
+                    RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,0,i,payload);
+
+                    byte[] packetData = rtp.toBytes();
+
+                    DatagramPacket packet = new DatagramPacket(packetData, packetData.length, clientIP, PORT);
+
+                    sending_socket.send(packet);
+
+                    // send voice packet
+                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, 512, recorder.getBlock());
+
+                    packetData = rtpA.toBytes();
+
+                    packet = new DatagramPacket(packetData, packetData.length, clientIP, PORT);
+
+                    sending_socket.send(packet);
+                }
+
+
+
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -57,49 +82,5 @@ public class Sender implements Runnable
         }
         //Close the socket
         sending_socket.close();
-    }
-
-    /**
-     *
-     * formPacketBuffer
-     */
-    public static byte[][] formPacketBuffer()
-    {
-        // get video data
-        byte[] video_data = Utils.getVideoData();
-        assert video_data != null;
-
-        byte[] temp = video_data;
-
-        if(PREV_FRAME != null)
-            for(int i = 0; i < video_data.length ; i++ )
-            {
-                if(PREV_FRAME.length > i)
-                    if(PREV_FRAME[i] == video_data[i])
-                        video_data[i] = 0;
-            }
-
-        //PREV_FRAME = temp;
-
-        //video_data = //Utils.compress(video_data);
-
-        byte[][] chunks = divideArray(video_data, SIZE_OF_CHUNKS);
-
-        return chunks;
-
-    }
-
-    public static byte[][] divideArray(byte[] source, int chunksize)
-    {
-        byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
-
-        int start = 0;
-
-        for(int i = 0; i < ret.length; i++) {
-            ret[i] = Arrays.copyOfRange(source,start, start + chunksize);
-            start += chunksize ;
-        }
-
-        return ret;
     }
 }

@@ -5,6 +5,12 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import javax.imageio.ImageIO;
@@ -21,7 +27,9 @@ public class Utils
     static final int SCREEN_WIDTH            = Toolkit.getDefaultToolkit().getScreenSize().width;
     static final int SCREEN_HEIGHT           = Toolkit.getDefaultToolkit().getScreenSize().height;
     static final Rectangle SCREEN_DIMENSIONS = new Rectangle( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    static ByteArrayOutputStream baos        = new ByteArrayOutputStream();
     static Robot robot;
+
 
     static {
         robot = null;
@@ -38,7 +46,7 @@ public class Utils
     public static BufferedImage resizeImage(BufferedImage img, int newW, int newH)
     {
         Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_3BYTE_BGR);
 
         Graphics2D g2d = dimg.createGraphics();
         g2d.drawImage(tmp, 0, 0, null);
@@ -106,23 +114,31 @@ public class Utils
         }
     }
 
-
-    public static byte[] imageToByteArray(BufferedImage image)
+    /**
+     * Describe function here
+     */
+    public static byte[] imageToByteArray(BufferedImage img)
     {
+        img = resizeImage(img, 750, 500);
         try
         {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write( image, "gif", baos );
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-            return imageInByte;
+            return ((DataBufferByte)img.getRaster().getDataBuffer()).getData();
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Describe function here
+     */
+    public static void drawImageSegment(Graphics g, byte[] imageSegment, int chunkX, int chunkY)
+    {
+        BufferedImage img = new BufferedImage(750, 1, BufferedImage.TYPE_3BYTE_BGR);
+        img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(imageSegment, imageSegment.length), new Point()));
+        g.drawImage(img, chunkX,chunkY,null);
     }
 
     /**
@@ -140,8 +156,8 @@ public class Utils
             else
             {
                 // return users screen instead
-                BufferedImage screen_shit = robot.createScreenCapture(SCREEN_DIMENSIONS);
-                return imageToByteArray(screen_shit);
+                //BufferedImage screen_shit =
+                return imageToByteArray(robot.createScreenCapture(SCREEN_DIMENSIONS));
             }
         }
         catch (Exception e)
@@ -151,3 +167,4 @@ public class Utils
         }
     }
 }
+

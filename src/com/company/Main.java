@@ -1,5 +1,7 @@
 package com.company;
 
+import java.awt.image.BufferedImage;
+
 public class Main {
 
     public static void main(String[] args)
@@ -9,6 +11,6 @@ public class Main {
         Video video = new Video();
         sender.start();
         receiver.start();
-        //video.start();
+        video.start();
     }
 }

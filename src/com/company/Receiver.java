@@ -3,9 +3,6 @@ package com.company;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Random;
 
 public class Receiver implements Runnable
 {
@@ -35,19 +32,40 @@ public class Receiver implements Runnable
             System.exit(1);
         }
 
+        int packetSize =
+                Byte.BYTES     +  // packet type
+                Integer.BYTES  +  // sequence number
+                Integer.BYTES  +  // chunkX
+                Integer.BYTES  +  // chunkY
+                Integer.BYTES  +  // payload size
+                Utils.SCREEN_WIDTH*3; // payload
+
+
         while (running)
         {
             try
             {
-                byte[] buffer = new byte[2000];
+
+                byte[] buffer = new byte[packetSize];
 
                 DatagramPacket packet = new DatagramPacket(buffer, 0, buffer.length);
 
                 receiving_socket.receive(packet);
 
-                RTPAudioPacket rtp = new RTPAudioPacket(buffer);
+                // video
+                if(buffer[0] == 1)
+                {
+                    RTPVideoPacket rtp = new RTPVideoPacket(buffer);
+                    Video.current_frame[rtp.chunkY] = rtp.payload;
+                }
 
-                player.playBlock(rtp.payload);
+                // audio
+                if(buffer[0] == 0)
+                {
+                    RTPAudioPacket rtp = new RTPAudioPacket(buffer);
+                    player.playBlock(rtp.payload);
+                }
+
             }
             catch (IOException e)
             {

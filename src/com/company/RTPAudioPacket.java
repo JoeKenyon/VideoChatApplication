@@ -43,7 +43,7 @@ public class RTPAudioPacket
      */
     public RTPAudioPacket(int sequenceNumber, int payloadSize ,byte[] payload)
     {
-        this.packetType     = 1;
+        this.packetType     = 0;
         this.sequenceNumber = sequenceNumber;
         this.payloadSize    = payloadSize;
         this.payload        = payload;

@@ -6,24 +6,30 @@ import java.awt.image.BufferedImage;
 
 public class Video implements Runnable
 {
-    static BufferedImage current_frame;
+    static byte[][] current_frame;
 
     static class VideoWindow extends JPanel
     {
         protected Timer timer;
         public VideoWindow()
         {
+            current_frame = new byte[Utils.SCREEN_HEIGHT][Utils.SCREEN_WIDTH*3];
             this.setLayout(null);
             timer = new Timer(40, e -> repaint());
             timer.start();
         }
+
         @Override
         protected void paintComponent(Graphics g)
         {
-            super.paintComponent(g);
+            //super.paintComponent(g);
+
             if(current_frame != null)
             {
-                g.drawImage(current_frame, 0, 0, null);
+                for(int i = 0; i < current_frame.length; i++)
+                {
+                    Utils.drawImageSegment(g,current_frame[i], 0,i);
+                }
             }
             else
             {
@@ -32,6 +38,7 @@ public class Video implements Runnable
                 g.setColor(Color.white);
                 g.drawString("NO DATA RECEIVED", 750/2, 500/2);
             }
+            g.dispose();
         }
     }
 
