@@ -67,7 +67,7 @@ public class Sender implements Runnable
 
                     // send voice packet
 
-                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, recorder.getBlock());
+                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, Utils.compress(recorder.getBlock()));
 
                     packetData = rtpA.toBytes();
 

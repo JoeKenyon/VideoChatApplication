@@ -52,7 +52,7 @@ public class Receiver implements Runnable
 
                 receiving_socket.receive(packet);
 
-                System.out.println(buffer[0]);
+                //System.out.println(buffer[0]);
 
                 // video
                 if(buffer[0] == 1)
@@ -66,7 +66,7 @@ public class Receiver implements Runnable
                 if(buffer[0] == 0)
                 {
                     RTPAudioPacket rtp = new RTPAudioPacket(buffer);
-                    player.playBlock(rtp.payload);
+                    player.playBlock(Utils.uncompress(rtp.payload));
                 }
 
             }
