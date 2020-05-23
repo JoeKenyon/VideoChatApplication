@@ -1,8 +1,8 @@
 package com.company;
 
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class Sender implements Runnable
@@ -12,7 +12,6 @@ public class Sender implements Runnable
     static int SEQ_NUMBER     = 0;
     static int SIZE_OF_CHUNKS = 29;
     static int HEADER_SIZE    = Integer.BYTES*4;
-    static int PACKET_SIZE    = HEADER_SIZE + SIZE_OF_CHUNKS;
 
     void start()
     {
@@ -45,59 +44,12 @@ public class Sender implements Runnable
         {
             try
             {
+                RTPAudioPacket rtp = new RTPAudioPacket(SEQ_NUMBER++, 512, recorder.getBlock());
+                byte[] packetData = rtp.toBytes();
+                DatagramPacket packet = new DatagramPacket(packetData, packetData.length, clientIP, PORT);
 
-
-                byte[][] chunks = formPacketBuffer();
-
-
-                ByteBuffer full_image = ByteBuffer.allocate(SIZE_OF_CHUNKS * chunks.length);
-
-                for(int i = 0; i < chunks.length; i++)
-                {
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(PACKET_SIZE);
-                    // seq num
-                    byteBuffer.putInt(SEQ_NUMBER++);
-                    // block num
-                    byteBuffer.putInt(i);
-                    // num of blocks
-                    byteBuffer.putInt(chunks.length);
-                    // video chunk
-                    byteBuffer.put(chunks[i]);
-
-                    byte[] buffer = byteBuffer.array();
-
-                    //System.out.println(Arrays.toString(buffer));
-                    //System.out.println(Arrays.toString(chunks[i]));
-
-                    // oh i got it
-                    ByteBuffer b = ByteBuffer.wrap(buffer);
-                    int seq_num   = b.getInt();
-                    int block_num = b.getInt();
-                    int num_of_blocks = b.getInt();
-                    // get first video chunk
-                    byte[] video_chunk = new byte[Sender.SIZE_OF_CHUNKS];
-                    b.get(video_chunk, 0, video_chunk.length);
-
-                    //video_chunk = Utils.uncompress(video_chunk);
-
-                    //for(int j = 0; j < video_chunk.length; j++)
-                    {
-                        //stuff
-                    }
-
-                    full_image.put(video_chunk);
-
-                    //Make a DatagramPacket from it, with client address and port number
-                    //DatagramPacket packet = new DatagramPacket(buffer, buffer.length, clientIP, PORT);
-
-                    //Send it
-                   // sending_socket.send(packet);
-                }
-
-                Video.current_frame = Utils.toImage(full_image.array(), 750, 500);
-
-
-
+                //Send it
+                sending_socket.send(packet);
 
             } catch (Exception e){
                 e.printStackTrace();

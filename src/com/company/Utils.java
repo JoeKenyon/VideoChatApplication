@@ -18,22 +18,15 @@ public class Utils
     static final int SCREEN_WIDTH            = Toolkit.getDefaultToolkit().getScreenSize().width;
     static final int SCREEN_HEIGHT           = Toolkit.getDefaultToolkit().getScreenSize().height;
     static final Rectangle SCREEN_DIMENSIONS = new Rectangle( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    static Robot robot;
 
-    /**
-     * Describe function here
-     */
-    public static byte[] processAudioData(byte[] data)
-    {
-        byte value = data[0];
-
-        for (int i=1; i < data.length; i++)
-        {
-            byte currentValue = data[i];
-            value += (currentValue - value);
-            data[i] = value;
+    static {
+        robot = null;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
         }
-
-        return data;
     }
 
     /**
@@ -110,20 +103,6 @@ public class Utils
         }
     }
 
-    public static BufferedImage toImage(byte[] data, int width, int height)
-    {
-        try
-        {
-            ByteArrayInputStream bis = new ByteArrayInputStream(data);
-            return ImageIO.read(bis);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
     public static byte[] imageToByteArray(BufferedImage image)
     {
@@ -158,7 +137,7 @@ public class Utils
             else
             {
                 // return users screen instead
-                BufferedImage screen_shit = new Robot().createScreenCapture(SCREEN_DIMENSIONS);
+                BufferedImage screen_shit = robot.createScreenCapture(SCREEN_DIMENSIONS);
                 return imageToByteArray(screen_shit);
             }
         }

@@ -8,7 +8,7 @@ public class Main {
         Receiver receiver = new Receiver();
         Video video = new Video();
         sender.start();
-        //receiver.start();
-        video.start();
+        receiver.start();
+        //video.start();
     }
 }

@@ -10,7 +10,7 @@ import javax.sound.sampled.DataLine.Info;
 
 public class AudioPlayer
 {
-    private AudioFormat linearFormat = new AudioFormat(8000.0F, 16, 1, true, true);
+    private AudioFormat linearFormat = new AudioFormat(32000.0F, 16, 1, true, true);
     private SourceDataLine sourceDataLine;
 
     public AudioPlayer() throws LineUnavailableException

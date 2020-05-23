@@ -14,7 +14,7 @@ public class Video implements Runnable
         public VideoWindow()
         {
             this.setLayout(null);
-            timer = new Timer(10, e -> repaint());
+            timer = new Timer(40, e -> repaint());
             timer.start();
         }
         @Override
