@@ -8,10 +8,10 @@ import java.util.Arrays;
 public class Sender implements Runnable
 {
     static DatagramSocket sending_socket;
-    static byte[] PREV_FRAME;
     static int SEQ_NUMBER     = 0;
-    static int SIZE_OF_CHUNKS = 29;
-    static int HEADER_SIZE    = Integer.BYTES*4;
+    static byte[][] sent_data;
+
+
 
     void start()
     {
@@ -26,6 +26,8 @@ public class Sender implements Runnable
         int PORT               = 55555;
         AudioRecorder recorder = null;
         InetAddress clientIP   = null;
+
+        sent_data              = new byte[Utils.SCREEN_HEIGHT][Utils.SCREEN_WIDTH*3];
 
         try
         {
@@ -45,17 +47,39 @@ public class Sender implements Runnable
             try
             {
 
+                // get video data
                 byte[] video_data = Utils.getVideoData();
 
+                // send one row at a time
                 for(int i = 0; i < 500; i++)
                 {
+                    // payload buffer
                     byte[] payload = new byte[750*3];
 
+                    // ensure data is there
                     assert video_data != null;
 
+                    // copy data to payload buffer
                     System.arraycopy(video_data, (payload.length * i), payload, 0, payload.length);
 
-                    payload = Utils.compress(payload);
+                    // check with previously sent frame
+                    // if there's no difference, send a 0
+                    // compression should remove all of these
+
+                    byte[] payload_original = payload.clone();
+
+                    for(int j = 0; j < payload.length; j++)
+                    {
+                        if(payload[j] == sent_data[i][j])
+                        {
+                            payload[j] = 0;
+                        }
+                    }
+
+                    sent_data[i] = payload_original;
+
+                    // compress data
+                    payload = GoldFoilCompression.compress(payload);
 
                     RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,0, i, payload);
 
@@ -66,8 +90,7 @@ public class Sender implements Runnable
                     sending_socket.send(packet);
 
                     // send voice packet
-
-                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, Utils.compress(recorder.getBlock()));
+                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, GoldFoilCompression.compress(recorder.getBlock()));
 
                     packetData = rtpA.toBytes();
 
@@ -75,9 +98,6 @@ public class Sender implements Runnable
 
                     sending_socket.send(packet);
                 }
-
-
-
 
             } catch (Exception e){
                 e.printStackTrace();

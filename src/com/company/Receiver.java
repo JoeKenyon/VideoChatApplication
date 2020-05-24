@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 public class Receiver implements Runnable
 {
     static DatagramSocket receiving_socket;
+    static byte[][] received_data;
 
     void start()
     {
@@ -20,6 +21,8 @@ public class Receiver implements Runnable
         boolean running        = true;
         int PORT               = 55555;
         AudioPlayer player     = null;
+
+        received_data          = new byte[Utils.SCREEN_HEIGHT][Utils.SCREEN_WIDTH*3];
 
         try
         {
@@ -38,7 +41,7 @@ public class Receiver implements Runnable
                 Integer.BYTES  +  // chunkX
                 Integer.BYTES  +  // chunkY
                 Integer.BYTES  +  // payload size
-                750*3; // payload
+                2000; // payload
 
 
         while (running)
@@ -52,21 +55,25 @@ public class Receiver implements Runnable
 
                 receiving_socket.receive(packet);
 
-                //System.out.println(buffer[0]);
-
                 // video
                 if(buffer[0] == 1)
                 {
-                    //buffer = Utils.compress(buffer);
                     RTPVideoPacket rtp = new RTPVideoPacket(buffer);
-                    Video.current_frame[rtp.chunkY] = Utils.uncompress(rtp.payload);
+
+                    byte[] payload = GoldFoilCompression.uncompress(rtp.payload);
+
+                    for(int i = 0; i < payload.length; i++)
+                    {
+                        if(payload[i] != 0)
+                            Video.current_frame[rtp.chunkY][i] = payload[i];
+                    }
                 }
 
                 // audio
                 if(buffer[0] == 0)
                 {
                     RTPAudioPacket rtp = new RTPAudioPacket(buffer);
-                    player.playBlock(Utils.uncompress(rtp.payload));
+                    player.playBlock(GoldFoilCompression.uncompress(rtp.payload));
                 }
 
             }

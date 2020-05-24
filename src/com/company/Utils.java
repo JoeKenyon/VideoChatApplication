@@ -23,21 +23,38 @@ public class Utils
     /**
      * Static variables needed for most Util Methods
      */
-    static boolean CAM_USED                  = false;
-    static final int SCREEN_WIDTH            = Toolkit.getDefaultToolkit().getScreenSize().width;
-    static final int SCREEN_HEIGHT           = Toolkit.getDefaultToolkit().getScreenSize().height;
-    static final Rectangle SCREEN_DIMENSIONS = new Rectangle( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    static ByteArrayOutputStream baos        = new ByteArrayOutputStream();
-    static Robot robot;
+    static boolean CAM_USED                   = false;
+    static final int SCREEN_WIDTH             = Toolkit.getDefaultToolkit().getScreenSize().width;
+    static final int SCREEN_HEIGHT            = Toolkit.getDefaultToolkit().getScreenSize().height;
+    static final Rectangle SCREEN_DIMENSIONS  = new Rectangle( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    static Robot _ROBOT;
 
-    static {
-        robot = null;
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
+    static
+    {
+        try { _ROBOT = new Robot(); }
+        catch (Exception e) { e.printStackTrace(); }
+    }
+
+    /**
+     * If CAM_USED, capture webcam.
+     * Otherwise, get desktop screen
+     */
+    public static byte[] getVideoData()
+    {
+        if (CAM_USED)
+        {
+            return null;
         }
+        else
+        {
+            // resize the screenshot to fit our GUI size
+            BufferedImage FRAME = resizeImage(_ROBOT.createScreenCapture(SCREEN_DIMENSIONS), 750, 500);
+
+            // return its byte representation
+            return ((DataBufferByte) FRAME.getRaster().getDataBuffer()).getData();
+        }
+
     }
 
     /**
@@ -45,11 +62,19 @@ public class Utils
      */
     public static BufferedImage resizeImage(BufferedImage img, int newW, int newH)
     {
-        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        // get scaled instance of image
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_FAST);
+
+        // create buffered image to return
         BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_3BYTE_BGR);
 
+        // create a 2Dgraphics object from the new buffered image
         Graphics2D g2d = dimg.createGraphics();
+
+        // draw the scaled image on the new buffered image
         g2d.drawImage(tmp, 0, 0, null);
+
+        // dispose, memory management i guess
         g2d.dispose();
 
         return dimg;
@@ -58,113 +83,16 @@ public class Utils
     /**
      * Describe function here
      */
-    public static byte[] uncompress(final byte[] input)
-    {
-        try
-        {
-            Inflater decompressor = new Inflater();
-            decompressor.setInput(input);
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
-
-            byte[] buf = new byte[1024];
-            while (!decompressor.finished())
-            {
-                int count = decompressor.inflate(buf);
-                bos.write(buf, 0, count);
-            }
-            bos.close();
-            return bos.toByteArray();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return new byte[0];
-        }
-    }
-
-    /**
-     * Describe function here
-     */
-    public static byte[] compress(final byte[] input)
-    {
-        try
-        {
-            Deflater compressor = new Deflater();
-            compressor.setLevel(Deflater.BEST_COMPRESSION);
-
-            compressor.setInput(input);
-            compressor.finish();
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
-
-            byte[] buf = new byte[1024];
-            while (!compressor.finished())
-            {
-                int count = compressor.deflate(buf);
-                bos.write(buf, 0, count);
-            }
-            bos.close();
-            return bos.toByteArray();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return new byte[0];
-        }
-    }
-
-    /**
-     * Describe function here
-     */
-    public static byte[] imageToByteArray(BufferedImage img)
-    {
-        img = resizeImage(img, 750, 500);
-        try
-        {
-            return ((DataBufferByte)img.getRaster().getDataBuffer()).getData();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Describe function here
-     */
     public static void drawImageSegment(Graphics g, byte[] imageSegment, int chunkX, int chunkY)
     {
+        // create buffered image to store our bytes
         BufferedImage img = new BufferedImage(750, 1, BufferedImage.TYPE_3BYTE_BGR);
-        img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(imageSegment, imageSegment.length), new Point()));
-        g.drawImage(img, chunkX,chunkY,null);
-    }
 
-    /**
-     * Describe function here
-     */
-    public static byte[] getVideoData()
-    {
-        try
-        {
-            if (CAM_USED)
-            {
-                // return users camera data instead
-                return null;
-            }
-            else
-            {
-                // return users screen instead
-                //BufferedImage screen_shit =
-                return (imageToByteArray(robot.createScreenCapture(SCREEN_DIMENSIONS)));
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
+        // set the buffered image's data
+        img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(imageSegment, imageSegment.length), new Point()));
+
+        // draw it to our graphics object
+        g.drawImage(img, chunkX,chunkY,null);
     }
 }
 
