@@ -3,7 +3,6 @@ package com.company;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Arrays;
 
 public class Sender implements Runnable
 {
@@ -33,7 +32,7 @@ public class Sender implements Runnable
         {
             recorder = new AudioRecorder();
             sending_socket = new DatagramSocket();
-            clientIP = InetAddress.getByName("localhost");
+            clientIP = InetAddress.getByName(Main.SEND_ADDR);
         }
         catch (Exception e)
         {
@@ -79,9 +78,11 @@ public class Sender implements Runnable
                     sent_data[i] = payload_original;
 
                     // compress data
-                    payload = GoldFoilCompression.compress(payload);
+                    payload = QuickLZ.compress(payload, 1);
 
-                    RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,0, i, payload);
+                    System.out.println(QuickLZ.sizeCompressed(payload));
+
+                    RTPVideoPacket rtp = new RTPVideoPacket(SEQ_NUMBER++,i, payload);
 
                     byte[] packetData = rtp.toBytes();
 
@@ -90,7 +91,7 @@ public class Sender implements Runnable
                     sending_socket.send(packet);
 
                     // send voice packet
-                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, GoldFoilCompression.compress(recorder.getBlock()));
+                    RTPAudioPacket rtpA = new RTPAudioPacket(SEQ_NUMBER++, QuickLZ.compress(recorder.getBlock(),1));
 
                     packetData = rtpA.toBytes();
 

@@ -6,7 +6,6 @@ public class RTPVideoPacket
 {
     byte   packetType;
     int    sequenceNumber;
-    int    chunkX;
     int    chunkY;
     int    payloadSize;
     byte[] payload;
@@ -24,12 +23,6 @@ public class RTPVideoPacket
 
         //extract sequence number
         this.sequenceNumber = ((data[off++] & 0xFF) << 0) |
-                ((data[off++] & 0xFF) << 8) |
-                ((data[off++] & 0xFF) << 16 ) |
-                ((data[off++] & 0xFF) << 24 );
-
-        // extract payload size
-        this.chunkX = ((data[off++] & 0xFF) << 0) |
                 ((data[off++] & 0xFF) << 8) |
                 ((data[off++] & 0xFF) << 16 ) |
                 ((data[off++] & 0xFF) << 24 );
@@ -55,11 +48,10 @@ public class RTPVideoPacket
     /**
      * Describe function here
      */
-    public RTPVideoPacket(int sequenceNumber, int chunkX, int chunkY, int payloadSize ,byte[] payload)
+    public RTPVideoPacket(int sequenceNumber, int chunkY, int payloadSize ,byte[] payload)
     {
         this.packetType     = 1;
         this.sequenceNumber = sequenceNumber;
-        this.chunkX         = chunkX;
         this.chunkY         = chunkY;
         this.payloadSize    = payloadSize;
         this.payload        = payload;
@@ -68,11 +60,10 @@ public class RTPVideoPacket
     /**
      * Describe function here
      */
-    public RTPVideoPacket(int sequenceNumber, int chunkX, int chunkY, byte[] payload)
+    public RTPVideoPacket(int sequenceNumber, int chunkY, byte[] payload)
     {
         this.packetType     = 1;
         this.sequenceNumber = sequenceNumber;
-        this.chunkX         = chunkX;
         this.chunkY         = chunkY;
         this.payloadSize    = payload.length;
         this.payload        = payload;
@@ -89,7 +80,6 @@ public class RTPVideoPacket
         int packetSize =
                 Byte.BYTES     +  // packet type
                 Integer.BYTES  +  // sequence number
-                Integer.BYTES  +  // chunkX
                 Integer.BYTES  +  // chunkY
                 Integer.BYTES  +  // payload size
                 this.payloadSize; // payload
@@ -105,11 +95,6 @@ public class RTPVideoPacket
         // sequence number
         for(int i = 0; i < 4; i++) {
             packetData[off++] = (byte)(this.sequenceNumber >>> (i * 8));
-        }
-
-        // chunkX
-        for(int i = 0; i < 4; i++) {
-            packetData[off++] = (byte)(this.chunkX >>> (i * 8));
         }
 
         // chunkY
@@ -135,7 +120,6 @@ public class RTPVideoPacket
     {
         return "RTP VIDEO PACKET" + "\n" +
                 "sequenceNumber: " + this.sequenceNumber + "\n" +
-                "chunkX        :"  + this.chunkX         + "\n" +
                 "chunkY        :"  + this.chunkY         + "\n" +
                 "payloadSize   :"  + this.payloadSize    + "\n" +
                 "payload       :"  + Arrays.toString(this.payload);

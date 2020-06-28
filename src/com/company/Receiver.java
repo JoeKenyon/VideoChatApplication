@@ -39,7 +39,7 @@ public class Receiver implements Runnable
                 Byte.BYTES     +  // packet type
                 Integer.BYTES  +  // sequence number
                 Integer.BYTES  +  // chunkX
-                Integer.BYTES  +  // chunkY
+                //Integer.BYTES  +  // chunkY
                 Integer.BYTES  +  // payload size
                 2000; // payload
 
@@ -60,7 +60,7 @@ public class Receiver implements Runnable
                 {
                     RTPVideoPacket rtp = new RTPVideoPacket(buffer);
 
-                    byte[] payload = GoldFoilCompression.uncompress(rtp.payload);
+                    byte[] payload = QuickLZ.decompress(rtp.payload);
 
                     for(int i = 0; i < payload.length; i++)
                     {
@@ -73,7 +73,7 @@ public class Receiver implements Runnable
                 if(buffer[0] == 0)
                 {
                     RTPAudioPacket rtp = new RTPAudioPacket(buffer);
-                    player.playBlock(GoldFoilCompression.uncompress(rtp.payload));
+                    player.playBlock(QuickLZ.decompress(rtp.payload));
                 }
 
             }
@@ -82,6 +82,8 @@ public class Receiver implements Runnable
                 e.printStackTrace();
             }
         }
+
+        //gay
 
         receiving_socket.close();
     }

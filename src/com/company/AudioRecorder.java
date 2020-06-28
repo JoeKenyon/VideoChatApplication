@@ -7,6 +7,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.DataLine.Info;
+import javafx.util.StringConverter.*;
 
 public class AudioRecorder
 {
